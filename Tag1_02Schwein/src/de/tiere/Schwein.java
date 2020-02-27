@@ -1,16 +1,14 @@
 package de.tiere;
 
 public class Schwein {
-	
-	
-		
+
 	private String name;
 	private int gewicht;
-	
+
 	public Schwein() {
 		this("nobody");
 	}
-	
+
 	public Schwein(String name) {
 		setName(name);
 		setGewicht(10);
@@ -21,7 +19,7 @@ public class Schwein {
 	}
 
 	public final void setName(String name) {
-		if(name == null || name.equalsIgnoreCase("elsa"))
+		if (name == null || name.equalsIgnoreCase("elsa"))
 			throw new IllegalArgumentException(String.format("Der Name '%s' ist nicht erlaubt!", name));
 		this.name = name;
 	}
@@ -32,9 +30,9 @@ public class Schwein {
 
 	private void setGewicht(int gewicht) {
 		this.gewicht = gewicht;
-		
+
 	}
-	
+
 	public void fressen() {
 		setGewicht(getGewicht() + 1);
 	}
@@ -49,7 +47,5 @@ public class Schwein {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
 
 }
