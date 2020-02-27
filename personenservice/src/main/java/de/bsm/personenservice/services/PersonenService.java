@@ -22,11 +22,24 @@ public class PersonenService {
 	 * Technische Exceptions in PSE wandeln
 	 */
 	public void speichern(Person person) throws PersonServiceException {
-		if(person == null)
-			throw new PersonServiceException("Person darf nicht null sein.");
+		try {
+			if(person == null)
+				throw new PersonServiceException("Person darf nicht null sein.");
+			
+			if(person.getVorname() == null || person.getVorname().length() < 2)
+				throw new PersonServiceException("Vorname zu kurz");
+			
+			if(person.getNachname() == null || person.getNachname().length() < 2)
+				throw new PersonServiceException("Nachname zu kurz");
+			
+			if(person.getVorname().equals("Attila"))
+				throw new PersonServiceException("Antipath");
+			
+			repository.saveOrUpdate(person);
+		} catch (RuntimeException e) {
+			throw new PersonServiceException("Interner Server Fehler",e);
+		}
 		
-		if(person.getVorname() == null)
-			throw new PersonServiceException("Vorname zu kurz");
 	}
 	
 
