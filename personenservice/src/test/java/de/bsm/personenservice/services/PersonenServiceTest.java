@@ -10,10 +10,14 @@ import de.bsm.personenservice.repositories.Person;
 import de.bsm.personenservice.repositories.PersonenRepository;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class PersonenServiceTest {
 	@Mock
 	private PersonenRepository repositoryMock;
+	@Mock
+	private List<String> antipathen;
 	@InjectMocks
 	private PersonenService underTest;
 	
@@ -74,8 +78,11 @@ public class PersonenServiceTest {
 
 	@Test
 	public void speichern_Antipath_ThrowsPersonenServiceException () throws Exception {
+		
+		when(antipathen.contains(anyString())).thenReturn(true);
+		
 		try {
-			final Person person = new Person("Attila","Doe");
+			final Person person = new Person("John","Doe");
 			underTest.speichern(person);
 			fail("Unerwartet keine Exception");
 		} catch (PersonServiceException e) {
@@ -86,6 +93,7 @@ public class PersonenServiceTest {
 	@Test
 	public void speichern_RuntimeExceptionInUnderlyingService_ThrowsPersonenServiceException () throws Exception {
 		
+		when(antipathen.contains(anyString())).thenReturn(false);
 		doThrow(new RuntimeException("Upps")).when(repositoryMock).saveOrUpdate((Person) any()); 
 		
 		try {
@@ -98,7 +106,18 @@ public class PersonenServiceTest {
 	}
 
 	@Test
+	public void speichern_HappyDay_ValidIdIsSet () throws Exception {
+			when(antipathen.contains(anyString())).thenReturn(false);
+		
+			final Person person = new Person("John","Doe");
+			underTest.speichern(person);
+			verify(repositoryMock).saveOrUpdate(person);
+			assertNotNull(person.getId());
+	}
+	@Test
 	public void speichern_HappyDay_PersonSavedInRepository () throws Exception {
+			when(antipathen.contains(anyString())).thenReturn(false);
+		
 			final Person person = new Person("John","Doe");
 			underTest.speichern(person);
 			verify(repositoryMock).saveOrUpdate(person);
