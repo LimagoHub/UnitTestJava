@@ -11,6 +11,7 @@ import de.bsm.personenservice.repositories.PersonenRepository;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class PersonenServiceTest {
@@ -121,6 +122,39 @@ public class PersonenServiceTest {
 			final Person person = new Person("John","Doe");
 			underTest.speichern(person);
 			verify(repositoryMock).saveOrUpdate(person);
+	}
+	
+	@Test
+	public void findAllJohns_3JohnsInList_returns3Johns() throws Exception {
+		final List<Person> allPersons = Arrays.asList(
+				new Person("John","Doe"),
+				new Person("Max","Mustermann"),
+				new Person("Jane","Doe"),
+				new Person("John","Wayne"),
+				new Person("John","Rambo"),
+				new Person("John Boy","Walton")
+		);
+		
+		when(repositoryMock.findAll()).thenReturn(allPersons);
+		List<Person> allJohns =  underTest.findAllJohns();
+		assertEquals(3, allJohns.size());
+		
+		for (Person person : allJohns) {
+			assertEquals("John", person.getVorname());
+		}
+	}
+
+	@Test
+	public void findAllJohns_RuntimeExceptionInUnderlyingService_ThrowsPersonenServiceException() throws Exception {
+				
+		try {
+			when(repositoryMock.findAll()).thenThrow(new RuntimeException("Upps"));
+			underTest.findAllJohns();
+			fail("Unerwartet keine Exception");
+			
+		} catch (PersonServiceException e) {
+			assertEquals("Interner Server Fehler", e.getMessage());
+		}
 	}
 
 }

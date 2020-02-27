@@ -1,7 +1,9 @@
 package de.bsm.personenservice.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import de.bsm.personenservice.repositories.Person;
 import de.bsm.personenservice.repositories.PersonenRepository;
@@ -63,6 +65,12 @@ public class PersonenService {
 	}
 	
 	public List<Person> findAllJohns() throws PersonServiceException{
-		return null;
+		
+		try {
+			return repository.findAll().stream().filter(p->p.getVorname().equals("John")).collect(Collectors.toList());
+		} catch (Exception e) {
+			throw new PersonServiceException("Interner Server Fehler",e);
+		}
+		
 	}
 }

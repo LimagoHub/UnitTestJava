@@ -9,8 +9,8 @@ public class Stapel {
 	private List<Object> data;
 	
 	
-	public Stapel() {
-		data = new ArrayList<Object>(DEFAULT_SIZE);
+	public Stapel() { 
+		data = new ArrayList<>(DEFAULT_SIZE);
 		
 	}
 	
