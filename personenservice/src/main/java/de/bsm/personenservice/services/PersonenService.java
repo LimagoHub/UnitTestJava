@@ -62,5 +62,7 @@ public class PersonenService {
 			throw new PersonServiceException("Nachname zu kurz");
 	}
 	
-
+	public List<Person> findAllJohns() throws PersonServiceException{
+		return null;
+	}
 }
