@@ -48,6 +48,15 @@ public class Euro2DollarPresenterTest {
 	
 	
 	@Test
+	public void rechnen_EuroValueNull_errorMessageInDollarField() {
+		
+		when(viewMock.getEuro()).thenReturn(null);
+		underTest.rechnen();
+		verify(viewMock).setDollar("Keine Zahl");
+	}
+	
+	
+	@Test
 	public void updateRechnenActionState_EuroValueNAN_disableRechnenAction() {
 		
 		when(viewMock.getEuro()).thenReturn("Herbert");
