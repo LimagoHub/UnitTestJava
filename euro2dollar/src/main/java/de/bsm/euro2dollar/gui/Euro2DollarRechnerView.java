@@ -135,14 +135,14 @@ public class Euro2DollarRechnerView extends Frame implements IEuro2DollarRechner
 	private TextField getTxtEuro() {
 		if(txtEuro == null) {
 			txtEuro = new TextField(20);
-//			txtEuro.addTextListener(new TextListener() {
-//				
-//				@Override
-//				public void textValueChanged(TextEvent e) {
-//					presenter.updateRechnenActionState();
-//					
-//				}
-//			});
+			txtEuro.addTextListener(new TextListener() {
+				
+				@Override
+				public void textValueChanged(TextEvent e) {
+					presenter.updateRechnenActionState();
+					
+				}
+			});
 		}
 		return txtEuro;
 	}
