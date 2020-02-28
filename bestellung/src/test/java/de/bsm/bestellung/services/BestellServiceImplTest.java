@@ -1,19 +1,27 @@
 package de.bsm.bestellung.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import static org.mockito.Mockito.*;
 
 import de.bsm.bestellung.repositories.BestellRepo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BestellServiceImplTest {
 	
+
 	private static final String VALID_ORDER = "Nagel";
 	private static final String VALID_MASTERCARD_NUMBER = "M0123456789";
 	private static final String VALID_VISACARD_NUMBER = "V0123456789";
@@ -113,6 +121,14 @@ public class BestellServiceImplTest {
 		underTest.bestellungErfassen(VALID_ORDER, VALID_MASTERCARD_NUMBER, VALID_AMOUNT);
 	}
 	
+	@Test(expected = ServerException.class)
+	public void bestellungErfassen_UnexpectedRuntimeException_throwsServerDownException() throws Exception{
+		
+		when(creditcardCheckerMock.checkCreditcard(anyString(), anyString(), anyDouble())).thenThrow(new ArrayIndexOutOfBoundsException());
+
+		underTest.bestellungErfassen(VALID_ORDER, VALID_MASTERCARD_NUMBER, VALID_AMOUNT);
+	}
+	
 	@Test
 	public void bestellungErfassen_CreditCardServerCall_CreditCardServerReceivesExpectedParameters() throws Exception{
 		
@@ -157,8 +173,25 @@ public class BestellServiceImplTest {
 		verify(bestellRepoMock).save(VALID_ORDER);
 	}
 	
-
 	
+	@Test
+	public void bestellungErfassen_ServiceInOrder_success() throws Exception{
+		
+		when(creditcardCheckerMock.checkCreditcard(anyString(), anyString(), anyDouble())).thenReturn(true);
+		
+		underTest.bestellungErfassen(VALID_ORDER, VALID_MASTERCARD_NUMBER, VALID_AMOUNT);
+		InOrder inOrder = inOrder(creditcardCheckerMock, bestellRepoMock);
+		
+		inOrder.verify(creditcardCheckerMock).checkCreditcard("MASTER", "0123456789", VALID_AMOUNT);
+		inOrder.verify(bestellRepoMock).save(VALID_ORDER);
+	}
+
+
+//	InOrder inOrder = inOrder(firstMock, secondMock);
+//
+//	//following will make sure that firstMock was called before secondMock
+//	inOrder.verify(firstMock).methodOne();
+//	inOrder.verify(secondMock).methodTwo();
 	
 
 }
